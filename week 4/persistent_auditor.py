@@ -4,24 +4,34 @@ INVENTORY_FILE = "inventory.txt"
 
 
 def load_inventory():
-    """Read the saved total from the inventory file.
+    """Read the saved total and transaction history from the inventory file.
 
     If the file does not exist (or is unreadable/corrupt), start fresh
-    with an empty inventory, without raising an error.
+    with an empty inventory and no history, without raising an error.
     """
     if not os.path.exists(INVENTORY_FILE):
-        return 0
+        return 0, []
 
     try:
         with open(INVENTORY_FILE, "r") as f:
             lines = f.read().splitlines()
 
         if not lines:
-            return 0
+            return 0, []
 
-        return int(lines[0])
+        total = int(lines[0])
+        history = [int(line) for line in lines[1:] if line.strip() != ""]
+        return total, history
     except (ValueError, IndexError):
-        return 0
+        return 0, []
+
+
+def save_inventory(total, history):
+    """Write the final total and transaction history list to the inventory file."""
+    with open(INVENTORY_FILE, "w") as f:
+        f.write(f"{total}\n")
+        for amount in history:
+            f.write(f"{amount}\n")
 
 
 def get_valid_input():
@@ -54,14 +64,14 @@ def generate_report(total_units, failed_attempts):
 
 
 def main():
-    inventory = load_inventory()
-    history = []
+    inventory, history = load_inventory()
     failures = 0
 
     print("=" * 40)
     print("Welcome to Persistent Inventory Auditor")
     print("=" * 40)
     print(f"Loaded inventory: {inventory}")
+    print(f"Loaded transaction history: {history}")
 
     while True:
         result = get_valid_input()
@@ -84,9 +94,11 @@ def main():
             print("ALERT: Inventory exceeded 500 units!")
             # no break — this is a warning, not a stop condition
 
+    save_inventory(inventory, history)
     generate_report(inventory, failures)
     print(f"Exiting Persistent Inventory Auditor. Final inventory: {inventory}")
     print(f"Transaction history: {history}")
+    print(f"Inventory successfully saved to {INVENTORY_FILE}")
 
 
 if __name__ == "__main__":
