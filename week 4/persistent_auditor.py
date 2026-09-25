@@ -1,5 +1,3 @@
-import os
-
 INVENTORY_FILE = "inventory.txt"
 
 
@@ -9,9 +7,6 @@ def load_inventory():
     If the file does not exist (or is unreadable/corrupt), start fresh
     with an empty inventory and no history, without raising an error.
     """
-    if not os.path.exists(INVENTORY_FILE):
-        return 0, []
-
     try:
         with open(INVENTORY_FILE, "r") as f:
             lines = f.read().splitlines()
@@ -22,7 +17,7 @@ def load_inventory():
         total = int(lines[0])
         history = [int(line) for line in lines[1:] if line.strip() != ""]
         return total, history
-    except (ValueError, IndexError):
+    except (FileNotFoundError, ValueError, IndexError):
         return 0, []
 
 
