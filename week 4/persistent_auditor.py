@@ -1,99 +1,112 @@
-INVENTORY_FILE = "inventory.txt"
+ORDERS_FILE = "orders.txt"
+STARTING_ID = 1001
 
 
-def load_inventory():
-    """Read the saved total and transaction history from the inventory file.
-
-    If the file does not exist (or is unreadable/corrupt), start fresh
-    with an empty inventory and no history, without raising an error.
-    """
+def load_orders():
+    """Read orders.txt and return a list of orders: [[id, product, qty], ...].
+    If the file doesn't exist yet, return an empty list (no crash on first run)."""
+    orders = []
     try:
-        with open(INVENTORY_FILE, "r") as f:
-            lines = f.read().splitlines()
-
-        if not lines:
-            return 0, []
-
-        total = int(lines[0])
-        history = [int(line) for line in lines[1:] if line.strip() != ""]
-        return total, history
-    except (FileNotFoundError, ValueError, IndexError):
-        return 0, []
-
-
-def save_inventory(total, history):
-    """Write the final total and transaction history list to the inventory file."""
-    with open(INVENTORY_FILE, "w") as f:
-        f.write(f"{total}\n")
-        for amount in history:
-            f.write(f"{amount}\n")
+        with open(ORDERS_FILE, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue  # skip blank lines
+                parts = [p.strip() for p in line.split(",")]
+                if len(parts) != 3:
+                    continue  # skip badly formatted lines
+                orders.append([int(parts[0]), parts[1], int(parts[2])])
+    except FileNotFoundError:
+        pass
+    return orders
 
 
-def get_valid_input():
-    """Prompt for a stock quantity. Returns an int, or the string 'quit'."""
-    user_input = input("Enter stock quantity (or 'quit' to exit): ")
-
-    if user_input.lower() == "quit":
-        return "quit"
-
-    if not user_input.isdigit():
-        return None  # invalid entry
-
-    return int(user_input)
+def save_orders(orders):
+    """Overwrite orders.txt with every order, one per line: id,product,qty"""
+    with open(ORDERS_FILE, "w") as f:
+        for order in orders:
+            f.write(format_order(order) + "\n")
 
 
-def process_delivery(current_total, new_value):
-    """Add the new delivery to the running total and return the new total."""
-    return current_total + new_value
+def format_order(order):
+    """Turn [1004, 'Laptop Stand', 2] into '1004,Laptop Stand,2'."""
+    return f"{order[0]},{order[1]},{order[2]}"
 
 
-def calculate_tax(amount):
-    """Return 10% tax on a single delivery amount."""
-    return amount * 0.10
+def display_orders(orders):
+    """Print all current orders."""
+    print("Current Orders:")
+    print()
+    if not orders:
+        print("No orders yet.")
+    for order in orders:
+        print(f"{order[0]}, {order[1]}, {order[2]}")
+    print()
 
 
-def generate_report(total_units, failed_attempts):
-    """Print the final summary."""
-    print(f"Total Units Processed: {total_units}")
-    print(f"Number of Failed/Rejected Entries: {failed_attempts}")
+def get_next_id(orders):
+    """Next order ID = highest existing ID + 1, or 1001 if there are no orders."""
+    if not orders:
+        return STARTING_ID
+    return max(order[0] for order in orders) + 1
+
+
+def get_product_name():
+    """Ask for a product name until a valid one is entered.
+    Returns 'quit' if the user wants to exit."""
+    while True:
+        name = input("Enter Product Name: ").strip()
+        if name.lower() == "quit":
+            return "quit"
+        if name == "":
+            print("Product name cannot be empty.")
+        elif "," in name:
+            print("Product name cannot contain commas.")
+        else:
+            return name
+
+
+def get_quantity():
+    """Ask for a quantity until a positive whole number is entered.
+    Returns 'quit' if the user wants to exit."""
+    while True:
+        qty = input("Enter Quantity: ").strip()
+        if qty.lower() == "quit":
+            return "quit"
+        if qty.isdigit() and int(qty) > 0:
+            return int(qty)
+        print("Invalid quantity. Please enter a positive whole number.")
 
 
 def main():
-    inventory, history = load_inventory()
-    failures = 0
+    orders = load_orders()
+    display_orders(orders)
+    print("(Type 'quit' at any prompt to exit)")
+    print()
 
-    print("=" * 40)
-    print("Welcome to Persistent Inventory Auditor")
-    print("=" * 40)
-    print(f"Loaded inventory: {inventory}")
-    print(f"Loaded transaction history: {history}")
-
-    while True:
-        result = get_valid_input()
-
-        if result == "quit":
+    while True:  # keeps asking for orders until the user types quit
+        product = get_product_name()
+        if product == "quit":
             break
-        elif result is None:
-            print("Invalid input. Please enter a number or 'quit'.")
-            failures += 1
-            continue
 
-        inventory = process_delivery(inventory, result)
-        history.append(result)
-        print(f"Current inventory: {inventory}")
+        quantity = get_quantity()
+        if quantity == "quit":
+            break
 
-        tax = calculate_tax(result)
-        print(f"Tax on this delivery: {tax}")
+        new_order = [get_next_id(orders), product, quantity]
+        orders.append(new_order)
 
-        if inventory > 500:
-            print("ALERT: Inventory exceeded 500 units!")
-            # no break — this is a warning, not a stop condition
+        print()
+        print("New Order Added:")
+        print(format_order(new_order))
 
-    save_inventory(inventory, history)
-    generate_report(inventory, failures)
-    print(f"Exiting Persistent Inventory Auditor. Final inventory: {inventory}")
-    print(f"Transaction history: {history}")
-    print(f"Inventory successfully saved to {INVENTORY_FILE}")
+        save_orders(orders)  # save after every order so nothing is lost
+        print()
+        print(f"Order successfully saved to {ORDERS_FILE}")
+        print()
+
+    print()
+    print(f"Exiting. Total orders saved: {len(orders)}")
 
 
 if __name__ == "__main__":
