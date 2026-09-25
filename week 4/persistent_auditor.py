@@ -55,6 +55,7 @@ def generate_report(total_units, failed_attempts):
 
 def main():
     inventory = load_inventory()
+    history = []
     failures = 0
 
     print("=" * 40)
@@ -73,6 +74,7 @@ def main():
             continue
 
         inventory = process_delivery(inventory, result)
+        history.append(result)
         print(f"Current inventory: {inventory}")
 
         tax = calculate_tax(result)
@@ -84,6 +86,7 @@ def main():
 
     generate_report(inventory, failures)
     print(f"Exiting Persistent Inventory Auditor. Final inventory: {inventory}")
+    print(f"Transaction history: {history}")
 
 
 if __name__ == "__main__":
