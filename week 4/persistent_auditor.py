@@ -1,4 +1,4 @@
-ORDERS_FILE = "orders.txt"
+ORDERS_FILE = "inventory.txt"
 STARTING_ID = 1001
 
 
