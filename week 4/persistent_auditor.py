@@ -2,7 +2,7 @@ ORDERS_FILE = "inventory.txt"
 STARTING_ID = 1001
 
 
-def load_orders():
+def load_inventory():
     """Read orders.txt and return a list of orders: [[id, product, qty], ...].
     If the file doesn't exist yet, return an empty list (no crash on first run)."""
     orders = []
@@ -21,7 +21,7 @@ def load_orders():
     return orders
 
 
-def save_orders(orders):
+def save_inventory(orders):
     """Overwrite orders.txt with every order, one per line: id,product,qty"""
     with open(ORDERS_FILE, "w") as f:
         for order in orders:
@@ -79,7 +79,7 @@ def get_quantity():
 
 
 def main():
-    orders = load_orders()
+    orders = load_inventory()
     display_orders(orders)
     print("(Type 'quit' at any prompt to exit)")
     print()
@@ -100,7 +100,7 @@ def main():
         print("New Order Added:")
         print(format_order(new_order))
 
-        save_orders(orders)  # save after every order so nothing is lost
+        save_inventory(orders)  # save after every order so nothing is lost
         print()
         print(f"Order successfully saved to {ORDERS_FILE}")
         print()

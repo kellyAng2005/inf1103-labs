@@ -1,0 +1,5 @@
+1001,Laptop Stand,2
+1002,Mouse,1
+1003,Stand,6
+1004,Keyboard,20
+1005,Keybaord,50
