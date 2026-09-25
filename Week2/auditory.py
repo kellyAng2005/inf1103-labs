@@ -1,6 +1,6 @@
 inventory = 0
 failure = 0
-
+####
 while True:
     user_input = input("Enter stock quantity (or 'quit'): ")
 
