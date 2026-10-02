@@ -9,6 +9,7 @@ data/inventory.json, and exposes CRUD-style operations through a menu.
 import json
 import os
 
+
 # Keep the data file in its own folder so a Docker volume can be mounted
 # onto just this folder (see Dockerfile) without hiding the app code.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
