@@ -1,5 +1,37 @@
 {
-    "P001": {"name": "Laptop", "price": 1200.0, "stock": 15, "type": "physical", "weight": 2.2},
-    "P002": {"name": "Mouse", "price": 25.5, "stock": 40, "type": "physical", "weight": 0.1},
-    "D001": {"name": "E-Book", "price": 12.9, "stock": 100, "type": "digital", "download_size": 12.5}
+    "P001": {
+        "name": "Laptop",
+        "price": 1200.0,
+        "stock": 15,
+        "type": "physical",
+        "weight": 2.2
+    },
+    "P002": {
+        "name": "Mouse",
+        "price": 25.5,
+        "stock": 40,
+        "type": "physical",
+        "weight": 0.1
+    },
+    "D001": {
+        "name": "E-Book",
+        "price": 12.9,
+        "stock": 100,
+        "type": "digital",
+        "download_size": 12.5
+    },
+    "P003": {
+        "name": "Keyboard",
+        "price": 99.99,
+        "stock": 50,
+        "type": "physical",
+        "weight": 3.0
+    },
+    "D002": {
+        "name": "Charger",
+        "price": 10.0,
+        "stock": 20,
+        "type": "digital",
+        "download_size": 50.0
+    }
 }
